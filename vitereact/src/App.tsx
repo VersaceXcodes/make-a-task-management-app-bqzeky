@@ -13,6 +13,7 @@ import GV_PublicTopNav from './components/views/GV_PublicTopNav';
 import GV_TopNav from './components/views/GV_TopNav';
 import GV_SideNav from './components/views/GV_SideNav';
 import GV_Footer from './components/views/GV_Footer';
+import TaskList from './components/TaskList';
 
 interface Task {
   id: number;
@@ -26,21 +27,33 @@ type SortOption = 'created' | 'priority' | 'alphabetical';
 
 const PublicLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen bg-gray-50 flex flex-col">
-    <GV_PublicTopNav />
-    {children}
-    <GV_Footer />
+    <header role="banner">
+      <GV_PublicTopNav />
+    </header>
+    <main role="main" className="flex-grow">
+      {children}
+    </main>
+    <footer role="contentinfo">
+      <GV_Footer />
+    </footer>
   </div>
 );
 
 const PrivateLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen bg-gray-50 flex">
-    <GV_SideNav />
-    <div className="flex-1 flex flex-col">
+  <div className="min-h-screen bg-gray-50">
+    <header role="banner" className="flex items-center">
+      <nav role="navigation" aria-label="Main navigation">
+        <GV_SideNav />
+      </nav>
       <GV_TopNav />
-      <main className="flex-1 p-6">
+    </header>
+    <div className="ml-[var(--sidebar-width)] transition-all duration-300 ease-in-out">
+      <main role="main" className="p-6 mt-[var(--nav-height)]" id="main-content">
         {children}
       </main>
-      <GV_Footer />
+      <footer role="contentinfo">
+        <GV_Footer />
+      </footer>
     </div>
   </div>
 );
@@ -78,7 +91,11 @@ export default function App() {
           path="/tasks"
           element={
             isAuthenticated ? (
-              <PrivateLayout><UV_TaskBoard /></PrivateLayout>
+              <PrivateLayout>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                  <TaskList />
+                </div>
+              </PrivateLayout>
             ) : (
               <Navigate to="/signin" replace />
             )

@@ -1,71 +1,53 @@
 import React from 'react';
+import { Select } from './ui/select';
 
-type Props = {
+interface TaskFilterProps {
   filter: string;
   sort: string;
-  onFilterChange: (filter: string) => void;
-  onSortChange: (sort: string) => void;
-  totalTasks: number;
-  activeTasks: number;
-  completedTasks: number;
-};
+  onFilterChange: (value: string) => void;
+  onSortChange: (value: string) => void;
+}
 
-const TaskFilter: React.FC<Props> = ({ 
-  filter, 
-  sort, 
-  onFilterChange, 
-  onSortChange, 
-  totalTasks, 
-  activeTasks, 
-  completedTasks 
-}) => {
+export default function TaskFilter({ filter, sort, onFilterChange, onSortChange }: TaskFilterProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-4 justify-center text-sm">
-        <div className="px-4 py-2 bg-gray-100 rounded-md">
-          <span className="font-medium">Total Tasks:</span>{" "}
-          <span className="text-indigo-600">{totalTasks}</span>
-        </div>
-        <div className="px-4 py-2 bg-gray-100 rounded-md">
-          <span className="font-medium">Active:</span>{" "}
-          <span className="text-green-600">{activeTasks}</span>
-        </div>
-        <div className="px-4 py-2 bg-gray-100 rounded-md">
-          <span className="font-medium">Completed:</span>{" "}
-          <span className="text-gray-600">{completedTasks}</span>
-        </div>
+    <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex-1">
+        <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-1">
+          Filter Tasks
+        </label>
+        <select
+          id="filter"
+          value={filter}
+          onChange={(e) => onFilterChange(e.target.value)}
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="all">All Tasks</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="high">High Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="low">Low Priority</option>
+          <option value="overdue">Overdue</option>
+        </select>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Status</label>
-          <select
-            value={filter}
-            onChange={(e) => onFilterChange(e.target.value)}
-            className="w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">All Tasks</option>
-            <option value="active">Active Tasks</option>
-            <option value="completed">Completed Tasks</option>
-          </select>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Sort by</label>
-          <select
-            value={sort}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="priority">Priority (High to Low)</option>
-            <option value="dueDate">Due Date</option>
-          </select>
-        </div>
+
+      <div className="flex-1">
+        <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+          Sort By
+        </label>
+        <select
+          id="sort"
+          value={sort}
+          onChange={(e) => onSortChange(e.target.value)}
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="priority">Priority (High to Low)</option>
+          <option value="dueDate">Due Date</option>
+          <option value="alphabetical">Alphabetical</option>
+        </select>
       </div>
     </div>
   );
-};
-
-export default TaskFilter;
+}

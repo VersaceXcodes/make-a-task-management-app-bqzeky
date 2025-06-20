@@ -24,7 +24,7 @@ const UV_Landing: React.FC = () => {
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 sm:py-16 md:py-20 flex flex-col-reverse md:flex-row items-center md:items-center gap-10">
             {/* Text Content */}
             <div className="md:flex-1 text-center md:text-left space-y-6">
-              <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight" role="heading" aria-level="1">
                 TaskCraft: Simplify Your Task Management
               </h1>
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-lg mx-auto md:mx-0">

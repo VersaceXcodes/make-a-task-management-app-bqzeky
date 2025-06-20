@@ -1,135 +1,125 @@
 import React, { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Select } from './ui/select';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-type TaskInput = {
-  title: string;
-  description: string;
-  dueDate?: string;
-  priority: 'low' | 'medium' | 'high';
-};
+const taskSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+  dueDate: z.string().optional(),
+  priority: z.enum(['low', 'medium', 'high']),
+});
 
-type Props = {
-  onSubmit: (task: TaskInput) => void;
-};
+type TaskFormData = z.infer<typeof taskSchema>;
 
-const AddTaskForm: React.FC<Props> = ({ onSubmit }) => {
-  const [task, setTask] = useState<TaskInput>({ 
-    title: '', 
-    description: '', 
-    dueDate: '',
-    priority: 'medium' 
+interface AddTaskFormProps {
+  onSubmit: (data: TaskFormData) => void;
+}
+
+export default function AddTaskForm({ onSubmit }: AddTaskFormProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<TaskFormData>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      priority: 'medium',
+    },
   });
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setTask(prev => ({ ...prev, [name]: value }));
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!task.title.trim()) {
-      alert('Task title is required!');
-      return;
+  const onSubmitForm = async (data: TaskFormData) => {
+    try {
+      await onSubmit(data);
+      reset();
+    } catch (error) {
+      console.error('Error submitting task:', error);
     }
-    onSubmit({
-      ...task,
-      dueDate: task.dueDate || undefined
-    });
-    setTask({ 
-      title: '', 
-      description: '', 
-      dueDate: '',
-      priority: 'medium' 
-    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="col-span-2">
-          <label className="block text-gray-700 mb-2" htmlFor="title">
-            Task Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={task.title}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            placeholder="What needs to be done?"
-            required
-          />
-          {errors.title && (
-            <p id="title-error" className="mt-1 text-sm text-red-600" role="alert">
-              {errors.title}
-            </p>
-          )}
-        </div>
-        
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="dueDate">
-            Due Date (optional)
-          </label>
-          <input
-            type="date"
-            id="dueDate"
-            name="dueDate"
-            value={task.dueDate}
-            onChange={handleChange}
-            className={`w-full p-2 border ${errors.dueDate ? 'border-red-500' : 'border-gray-300'} rounded focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
-            aria-invalid={!!errors.dueDate}
-            aria-describedby={errors.dueDate ? 'dueDate-error' : undefined}
-          />
-          {errors.dueDate && (
-            <p id="dueDate-error" className="mt-1 text-sm text-red-600" role="alert">
-              {errors.dueDate}
-            </p>
-          )}
-        </div>
-        
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="priority">
-            Priority
-          </label>
-          <select
-            id="priority"
-            name="priority"
-            value={task.priority}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          >
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-      </div>
-      
+    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
       <div>
-        <label className="block text-gray-700 mb-2" htmlFor="description">
-          Description (optional)
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          Task Title *
         </label>
-        <textarea
-          id="description"
-          name="description"
-          value={task.description}
-          onChange={handleChange}
-          rows={3}
-          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Add details about your task..."
-        ></textarea>
+        <Input
+          id="title"
+          {...register('title')}
+          className={`mt-1 block w-full ${errors.title ? 'border-red-500' : ''}`}
+          placeholder="Enter task title"
+          aria-describedby={errors.title ? 'title-error' : undefined}
+        />
+        {errors.title && (
+          <p id="title-error" className="mt-1 text-sm text-red-500">
+            {errors.title.message}
+          </p>
+        )}
       </div>
-      
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition duration-200 shadow-md font-medium"
+
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          Description
+        </label>
+        <Textarea
+          id="description"
+          {...register('description')}
+          className={`mt-1 block w-full ${errors.description ? 'border-red-500' : ''}`}
+          placeholder="Enter task description"
+          rows={3}
+          aria-describedby={errors.description ? 'description-error' : undefined}
+        />
+        {errors.description && (
+          <p id="description-error" className="mt-1 text-sm text-red-500">
+            {errors.description.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
+          Due Date
+        </label>
+        <Input
+          type="date"
+          id="dueDate"
+          {...register('dueDate')}
+          className="mt-1 block w-full"
+          min={new Date().toISOString().split('T')[0]}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+          Priority
+        </label>
+        <select
+          id="priority"
+          {...register('priority')}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
-          Add Task
-        </button>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div className="pt-4">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+        >
+          {isSubmitting ? 'Adding Task...' : 'Add Task'}
+        </Button>
       </div>
     </form>
   );
-};
-
-export default AddTaskForm;
+}

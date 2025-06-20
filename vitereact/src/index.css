@@ -13,6 +13,12 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+
+	/* Layout variables */
+	--nav-height: 64px;
+	--sidebar-width: 256px;
+	--sidebar-collapsed-width: 64px;
+	--content-max-width: 1200px;
 }
 
 *::selection {
@@ -114,7 +120,11 @@
 	margin: 0 auto;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+	:root {
+		--sidebar-width: 0px;
+	}
+
 	.container {
 		padding: 0 1rem;
 	}
@@ -125,5 +135,10 @@
 	
 	.gap-4 {
 		gap: 1rem;
+	}
+
+	/* Show sidebar when active */
+	.sidebar-active {
+		--sidebar-width: 256px;
 	}
 }
