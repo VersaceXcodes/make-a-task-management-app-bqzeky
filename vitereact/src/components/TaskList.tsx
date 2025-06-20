@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TaskItem from './TaskItem';
 import TaskFilter from './TaskFilter';
 import AddTaskForm from './AddTaskForm';
-import ToastNotification from './ToastNotification.tsx';
-import Spinner from './Spinner.tsx';
+import ToastNotification from './ToastNotification';
+import Spinner from './Spinner';
 
 type Task = {
   id: string;
