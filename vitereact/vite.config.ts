@@ -32,7 +32,9 @@ export default defineConfig({
 		},
 		*/
 
-		react(),
+		react({
+			include: ['**/*.tsx', '**/*.ts', '**/*.jsx', '**/*.js'],
+		}),
 	],
 	resolve: {
 		alias: {
